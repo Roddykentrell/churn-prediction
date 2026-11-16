@@ -1,8 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report, confusion_matrix
 from xgboost import XGBClassifier
 
@@ -20,9 +19,9 @@ data = {
 df = pd.DataFrame(data)
 
 # Churn label: more likely with short tenure, low spend, many tickets/failures
-p = (0.05 + 0.002 * df.support_tickets + 0.001 * df.payment_failures
-     - 0.003 * df.tenure_months - 0.001 * df.monthly_spend)
-df["churned"] = (np.random.rand(n) < p.clip(0.01, 0.6)).astype(int)
+p = (0.35 - 0.004 * df.tenure_months - 0.001 * df.monthly_spend
+     + 0.02 * df.support_tickets + 0.05 * df.payment_failures)
+df["churned"] = (np.random.rand(n) < p.clip(0.02, 0.8)).astype(int)
 print(f"Class balance: {df.churned.mean():.1%} churned")
 
 # 2. Data leak demo: a feature that "predicts" the outcome
@@ -64,6 +63,6 @@ for i in range(2):
         plt.text(j, i, cm[i, j], ha="center", va="center", fontsize=14)
 plt.xlabel("Predicted")
 plt.ylabel("Actual")
-plt.title("Churn Model — Confusion Matrix")
+plt.title("Churn Model - Confusion Matrix")
 plt.savefig("confusion_matrix.png", dpi=100)
 print("\nSaved confusion_matrix.png")
